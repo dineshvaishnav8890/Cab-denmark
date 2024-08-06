@@ -62,4 +62,4 @@ jobs:
           
           # Deploy your application to AWS
           # Example: Copying build artifacts to an S3 bucket
-          aws s3 cp target/car-booking.webapp.war s3://java-application-cab/
+          aws s3 cp /home/ubuntu/Cab-denmark/target s3://java-application-cab/
