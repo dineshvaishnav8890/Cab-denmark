@@ -28,4 +28,4 @@ jobs:
         TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}
         TOMCAT_URL: http://18.191.10.172:8080
       run: |
-        curl -T target/car-booking.webapp.war "http://$TOMCAT_USERNAME:$TOMCAT_PASSWORD@$TOMCAT_URL/manager/text/car-booking.webapp"
+        curl -T target/car-booking.webapp.war "http://$TOMCAT_USERNAME:$TOMCAT_PASSWORD@$TOMCAT_URL/car-booking.webapp"
