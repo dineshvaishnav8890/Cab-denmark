@@ -1,0 +1,63 @@
+name: Java CI/CD Pipeline  # Name of the workflow
+
+on:  # Define events that trigger the workflow
+  push:  # Trigger on push events to the main branch
+    branches:
+      - master
+  pull_request:  # Trigger on pull request events to the main branch
+    branches:
+      - master
+
+jobs:  # Define jobs in the workflow
+  build:  # Job for building and testing the application
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:  # Steps in the build job
+      - name: Checkout repository  # Step to checkout the repository
+        uses: actions/checkout@v2  # GitHub Action to checkout code
+
+      - name: Set up JDK 11  # Step to set up Java Development Kit
+        uses: actions/setup-java@v3  # GitHub Action to set up Java
+        with:
+          java-version: '11'  # Specify Java version 11
+
+      - name: Cache Maven packages  # Step to cache Maven packages
+        uses: actions/cache@v2  # GitHub Action to cache dependencies
+        with:
+          path: ~/.m2/repository  # Cache Maven repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}  # Cache key based on OS and pom.xml hash
+          restore-keys: |
+            ${{ runner.os }}-maven-  # Restore key
+
+      - name: Build with Maven  # Step to build the application
+        run: mvn -B package --file pom.xml  # Maven command to build
+
+      - name: Run tests  # Step to run tests
+        run: mvn test  # Maven command to run tests
+
+  deploy:  # Job for deploying the application
+    needs: build  # This job depends on the build job
+    runs-on: ubuntu-latest  # Use the latest Ubuntu runner
+
+    steps:  # Steps in the deploy job
+      - name: Checkout repository  # Step to checkout the repository
+        uses: actions/checkout@v2  # GitHub Action to checkout code
+
+      - name: Set up JDK 11  # Step to set up Java Development Kit
+        uses: actions/setup-java@v3  # GitHub Action to set up Java
+        with:
+          java-version: '11'  # Specify Java version 11
+
+      - name: Deploy to AWS  # Step to deploy the application to AWS
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}  # AWS Access Key from GitHub secrets
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}  # AWS Secret Key from GitHub secrets
+          AWS_REGION: 'us-east-2'  # AWS Region
+        run: |
+          # Install AWS CLI
+          sudo apt-get install -y python3-pip  # Install pip
+          pip3 install awscli  # Install AWS CLI
+          
+          # Deploy your application to AWS
+          # Example: Copying build artifacts to an S3 bucket
+          aws s3 cp target/car-booking-app s3://java-application-cab/  # AWS CLI command to copy files to S3
