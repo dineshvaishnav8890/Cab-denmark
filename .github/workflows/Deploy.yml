@@ -16,7 +16,7 @@ jobs:
     - name: Set up JDK 11
       uses: actions/setup-java@v3
       with:
-        distribution: 'temurin'  # Use 'temurin' as the distribution
+        distribution: 'temurin'
         java-version: '11'
 
     - name: Build with Maven
@@ -26,6 +26,6 @@ jobs:
       env:
         TOMCAT_USERNAME: ${{ secrets.TOMCAT_USERNAME }}
         TOMCAT_PASSWORD: ${{ secrets.TOMCAT_PASSWORD }}
-        TOMCAT_URL: http://18.191.10.172:8080
+        TOMCAT_URL: ${{ secrets.TOMCAT_URL }}
       run: |
-        curl -T target/car-booking.webapp.war "http://$TOMCAT_USERNAME:$TOMCAT_PASSWORD@$TOMCAT_URL/car-booking.webapp"
+        curl -u $TOMCAT_USERNAME:$TOMCAT_PASSWORD -T target/car-booking.webapp.war "$TOMCAT_URL/manager/text/deploy?path=/car-booking&update=true"
